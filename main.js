@@ -54,27 +54,23 @@ const plafondLight=new THREE.PointLight(0xccddff,5.0,30); plafondLight.position.
         .name = i === 0 ? 'qasar_glass_inner' : 'qasar_glass_outer';
 });
 
-// HUD
 createHUD(scene);
 
-// GLB
-console.log('🏙️ QASAR v3.7.4');
+console.log('🏙️ QASAR v0.2.4 — текстуры в GLB');
 new GLTFLoader().load('qasar_room.glb', gltf => {
     const model = gltf.scene;
     model.name = 'qasar_room';
-    model.traverse(c => { if (c.isMesh && c.material) (Array.isArray(c.material)?c.material:[c.material]).forEach(x=>x.side=THREE.DoubleSide); });
+    model.traverse(c => { if (c.isMesh && c.material) (Array.isArray(c.material)?c.material:[c.material]).forEach(x => {
+        x.side = THREE.DoubleSide;
+    }); });
     scene.add(model);
 
     const box = new THREE.Box3().setFromObject(model);
     const center = box.getCenter(new THREE.Vector3());
-    const size = box.getSize(new THREE.Vector3());
-    console.log('📐 Центр:', center.x.toFixed(2), center.y.toFixed(2), center.z.toFixed(2));
-    console.log('📏 Размеры:', size.x.toFixed(2), 'x', size.y.toFixed(2), 'x', size.z.toFixed(2));
-
     camera.position.set(center.x, center.y, center.z + 4);
     controls.target.copy(center);
     controls.update();
-    console.log('✅ Камера в центре');
+    console.log('✅ QASAR v0.2.4');
 }, p=>{if(Math.round(p.loaded/p.total*100)%25===0)console.log(`⬇️${Math.round(p.loaded/p.total*100)}%`)}, e=>console.error('❌',e.message));
 
 const clock=new THREE.Clock();
@@ -84,9 +80,7 @@ function animate(){
     const t = clock.getElapsedTime();
     ['qasar_led_bottom','qasar_led_mid','qasar_led_top','qasar_plafond'].forEach(n=>{
         const o=scene.getObjectByName(n);
-        if(o&&o.material.emissiveIntensity!==undefined) {
-            o.material.emissiveIntensity = (n.includes('bottom')?6:n.includes('plafond')?4:5) + Math.sin(t*2.5+n.length)*1.5;
-        }
+        if(o&&o.material.emissiveIntensity!==undefined) o.material.emissiveIntensity = (n.includes('bottom')?6:n.includes('plafond')?4:5) + Math.sin(t*2.5+n.length)*1.5;
     });
     if(plafondLight)plafondLight.intensity=5.0+Math.sin(t*2.0)*2.0;
     controls.update();
